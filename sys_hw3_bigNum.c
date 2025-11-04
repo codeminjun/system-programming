@@ -2,21 +2,21 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX_DIGITS 20  // 100,000 × 100,000의 최대 자릿수는 10자리이지만 여유있게 설정
+#define MAX_DIGITS 20  // Maximum digits for 100,000 × 100,000 is 10, but set with margin
 
-// 큰 수를 저장하는 구조체
+// Structure to store large numbers
 typedef struct {
-    int digits[MAX_DIGITS];  // 각 자리수 저장 (역순: digits[0]이 일의 자리)
-    int length;              // 실제 자릿수
+    int digits[MAX_DIGITS];  // Store each digit (reversed: digits[0] is ones place)
+    int length;              // Actual number of digits
 } BigInt;
 
-// BigInt 초기화
+// Initialize BigInt
 void init_bigint(BigInt *num) {
     memset(num->digits, 0, sizeof(num->digits));
     num->length = 0;
 }
 
-// 정수를 BigInt로 변환
+// Convert integer to BigInt
 void int_to_bigint(long long n, BigInt *result) {
     init_bigint(result);
     
@@ -35,12 +35,12 @@ void int_to_bigint(long long n, BigInt *result) {
     result->length = i;
 }
 
-// BigInt를 16진수로 출력
+// Print BigInt in hexadecimal
 void print_hex(BigInt *num) {
-    // BigInt를 10진수로 해석하여 16진수로 변환
+    // Convert BigInt to decimal then to hexadecimal
     // 100,000 × 100,000 = 10,000,000,000 = 0x2540BE400
     
-    // 먼저 10진수 값을 계산 (long long 사용)
+    // First calculate decimal value (using long long)
     long long decimal_value = 0;
     long long multiplier = 1;
     
@@ -49,11 +49,11 @@ void print_hex(BigInt *num) {
         multiplier *= 10;
     }
     
-    printf("10진수 결과: %lld\n", decimal_value);
-    printf("16진수 결과: 0x%llX\n", decimal_value);
+    printf("Decimal result: %lld\n", decimal_value);
+    printf("Hexadecimal result: 0x%llX\n", decimal_value);
 }
 
-// BigInt 곱셈 함수 
+// BigInt multiplication function
 void big_mult(long long a, long long b, BigInt *result) {
     BigInt num1, num2;
     int_to_bigint(a, &num1);
@@ -61,7 +61,7 @@ void big_mult(long long a, long long b, BigInt *result) {
     
     init_bigint(result);
     
-    // 각 자리수끼리 곱셈
+    // Multiply each digit
     for (int i = 0; i < num1.length; i++) {
         int carry = 0;
         for (int j = 0; j < num2.length; j++) {
@@ -71,7 +71,7 @@ void big_mult(long long a, long long b, BigInt *result) {
             carry = product / 10;
         }
         
-        // 남은 자리올림 처리
+        // Handle remaining carry
         int pos = i + num2.length;
         while (carry > 0) {
             result->digits[pos] += carry;
@@ -81,16 +81,16 @@ void big_mult(long long a, long long b, BigInt *result) {
         }
     }
     
-    // 실제 길이 계산
+    // Calculate actual length
     result->length = num1.length + num2.length;
     while (result->length > 1 && result->digits[result->length - 1] == 0) {
         result->length--;
     }
 }
 
-// BigInt를 10진수로 출력 (디버깅용)
+// Print BigInt in decimal (for debugging)
 void print_decimal(BigInt *num) {
-    printf("10진수: ");
+    printf("Decimal: ");
     for (int i = num->length - 1; i >= 0; i--) {
         printf("%d", num->digits[i]);
     }
@@ -98,23 +98,23 @@ void print_decimal(BigInt *num) {
 }
 
 int main() {
-    printf("=== 큰 수 곱셈 프로그램 ===\n\n");
+    printf("=== Large Number Multiplication Program ===\n\n");
     
     long long num1 = 100000;
     long long num2 = 100000;
     
-    printf("계산: %lld × %lld\n\n", num1, num2);
+    printf("Calculation: %lld × %lld\n\n", num1, num2);
     
     BigInt result;
     big_mult(num1, num2, &result);
     
-    printf("결과:\n");
+    printf("Result:\n");
     print_decimal(&result);
     print_hex(&result);
     
-    printf("\n=== 추가 테스트 ===\n\n");
+    printf("\n=== Additional Tests ===\n\n");
     
-    // 테스트 케이스들
+    // Test cases
     long long test_cases[][2] = {
         {12, 34},
         {123, 456},
@@ -141,9 +141,9 @@ int main() {
         printf("%lld (0x%llX) ", calculated, calculated);
         
         if (calculated == expected) {
-            printf("정확!\n");
+            printf("Correct!\n");
         } else {
-            printf("오류! (예상값: %lld)\n", expected);
+            printf("Error! (Expected: %lld)\n", expected);
         }
     }
     
